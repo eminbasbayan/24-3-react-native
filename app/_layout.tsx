@@ -1,37 +1,47 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
+import React from "react";
+import { Provider } from 'react-redux';
+import { store } from '../store';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
+export default function TabLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    <Provider store={store}>
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: "#42A5F5", // Aktif tab rengi 
+          headerShown: false, 
+        }}
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Ürünler",
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon
+                name={focused ? "list" : "list-outline"}
+                color={color} 
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="cart"
+          options={{
+            title: "Sepet",
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon
+                name={focused ? "cart" : "cart-outline"}
+                color={color}
+              />
+            ),
+          }}
+        />
+      </Tabs>
+    </Provider>
   );
+}
+
+function TabBarIcon({ name, color = "red" }: { name: string; color: string }) {
+  return <Ionicons name={name} size={24} color={color} />;
 }
